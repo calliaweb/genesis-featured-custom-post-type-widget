@@ -8,6 +8,7 @@
  * @author  Pete Favelle
  * @author  Robin Cornett
  * @author  Mika Epstein
+ * @author  Neil Gowran
  * @license GPL-2.0+
  *
  */
@@ -47,6 +48,7 @@ class Genesis_Featured_Custom_Post_Type extends WP_Widget {
 			'show_image'              => 0,
 			'image_alignment'         => '',
 			'image_size'              => '',
+                        'image_position'          => 0,
 			'show_gravatar'           => 0,
 			'gravatar_alignment'      => '',
 			'gravatar_size'           => '',
@@ -146,40 +148,83 @@ class Genesis_Featured_Custom_Post_Type extends WP_Widget {
 				'context' => 'entry',
 			) );
 
-			$size = $instance['image_size'];
-			$image = apply_filters( 'featured_custom_post_type_image', genesis_get_image( array(
-				'format'  => 'html',
-				'size'    => $instance['image_size'],
-				'context' => 'featured-post-widget',
-				'attr'    => genesis_parse_attr( 'entry-image-widget' ),
-			) ), $size );
+                // Enable the image to diplay under the title
+              	if ( $instance['image_position'] ) {
 
-			if ( $instance['show_image'] && $image )
-				printf( '<a href="%s" title="%s" class="%s">%s</a>', get_permalink(), the_title_attribute( 'echo=0' ), esc_attr( $instance['image_alignment'] ), $image );
+    			if ( $instance['show_title'] )
+    				echo genesis_html5() ? '<header class="entry-header">' : '';
 
-			if ( ! empty( $instance['show_gravatar'] ) ) {
-				echo '<span class="' . esc_attr( $instance['gravatar_alignment'] ) . '">';
-				echo get_avatar( get_the_author_meta( 'ID' ), $instance['gravatar_size'] );
-				echo '</span>';
-			}
+    				if ( ! empty( $instance['show_title'] ) ) {
 
-			if ( $instance['show_title'] )
-				echo genesis_html5() ? '<header class="entry-header">' : '';
+    					if ( genesis_html5() )
 
-				if ( ! empty( $instance['show_title'] ) ) {
+    						printf( '<h2 class="entry-title"><a href="%s" title="%s">%s</a></h2>', get_permalink(), the_title_attribute( 'echo=0' ), get_the_title() );
+    					else
+    						printf( '<h2><a href="%s" title="%s">%s</a></h2>', get_permalink(), the_title_attribute( 'echo=0' ), get_the_title() );
 
-					if ( genesis_html5() )
-						printf( '<h2 class="entry-title"><a href="%s" title="%s">%s</a></h2>', get_permalink(), the_title_attribute( 'echo=0' ), get_the_title() );
-					else
-						printf( '<h2><a href="%s" title="%s">%s</a></h2>', get_permalink(), the_title_attribute( 'echo=0' ), get_the_title() );
+    				}
 
-				}
+    				if ( ! empty( $instance['show_byline'] ) && ! empty( $instance['post_info'] ) )
+    					printf( genesis_html5() ? '<p class="entry-meta">%s</p>' : '<p class="byline post-info">%s</p>', do_shortcode( $instance['post_info'] ) );
 
-				if ( ! empty( $instance['show_byline'] ) && ! empty( $instance['post_info'] ) )
-					printf( genesis_html5() ? '<p class="entry-meta">%s</p>' : '<p class="byline post-info">%s</p>', do_shortcode( $instance['post_info'] ) );
+    			if ( $instance['show_title'] )
+    				echo genesis_html5() ? '</header>' : '';
 
-			if ( $instance['show_title'] )
-				echo genesis_html5() ? '</header>' : '';
+                        $size = $instance['image_size'];
+      			$image = apply_filters( 'featured_custom_post_type_image', genesis_get_image( array(
+      				'format'  => 'html',
+      				'size'    => $instance['image_size'],
+      				'context' => 'featured-post-widget',
+      				'attr'    => genesis_parse_attr( 'entry-image-widget' ),
+      			) ), $size );
+
+      			if ( $instance['show_image'] && $image )
+      				printf( '<a href="%s" title="%s" class="%s">%s</a>', get_permalink(), the_title_attribute( 'echo=0' ), esc_attr( $instance['image_alignment'] ), $image );
+
+                        if ( ! empty( $instance['show_gravatar'] ) ) {
+      				echo '<span class="' . esc_attr( $instance['gravatar_alignment'] ) . '">';
+      				echo get_avatar( get_the_author_meta( 'ID' ), $instance['gravatar_size'] );
+      				echo '</span>';
+      			}
+                }
+
+                else {
+                        $size = $instance['image_size'];
+    			$image = apply_filters( 'featured_custom_post_type_image', genesis_get_image( array(
+    				'format'  => 'html',
+    				'size'    => $instance['image_size'],
+    				'context' => 'featured-post-widget',
+    				'attr'    => genesis_parse_attr( 'entry-image-widget' ),
+    			) ), $size );
+
+    			if ( $instance['show_image'] && $image )
+    				printf( '<a href="%s" title="%s" class="%s">%s</a>', get_permalink(), the_title_attribute( 'echo=0' ), esc_attr( $instance['image_alignment'] ), $image );
+
+    			if ( ! empty( $instance['show_gravatar'] ) ) {
+    				echo '<span class="' . esc_attr( $instance['gravatar_alignment'] ) . '">';
+    				echo get_avatar( get_the_author_meta( 'ID' ), $instance['gravatar_size'] );
+    				echo '</span>';
+    			}
+
+    			if ( $instance['show_title'] )
+    				echo genesis_html5() ? '<header class="entry-header">' : '';
+
+    				if ( ! empty( $instance['show_title'] ) ) {
+
+    					if ( genesis_html5() )
+
+    						printf( '<h2 class="entry-title"><a href="%s" title="%s">%s</a></h2>', get_permalink(), the_title_attribute( 'echo=0' ), get_the_title() );
+    					else
+    						printf( '<h2><a href="%s" title="%s">%s</a></h2>', get_permalink(), the_title_attribute( 'echo=0' ), get_the_title() );
+
+    				}
+
+    				if ( ! empty( $instance['show_byline'] ) && ! empty( $instance['post_info'] ) )
+    					printf( genesis_html5() ? '<p class="entry-meta">%s</p>' : '<p class="byline post-info">%s</p>', do_shortcode( $instance['post_info'] ) );
+
+    			if ( $instance['show_title'] )
+    				echo genesis_html5() ? '</header>' : '';
+                }
 
 			if ( ! empty( $instance['show_content'] ) ) {
 
@@ -490,6 +535,11 @@ class Genesis_Featured_Custom_Post_Type extends WP_Widget {
 						<option value="aligncenter" <?php selected( 'aligncenter', $instance['image_alignment'] ); ?>><?php _e( 'Center', 'featured-custom-post-type-widget-for-genesis' ); ?></option>
 					</select>
 				</p>
+
+                                <p>
+                                        <input id="<?php echo esc_attr( $this->get_field_id( 'image_position' ) ); ?>" type="checkbox" name="<?php echo esc_attr( $this->get_field_name( 'image_position' ) ); ?>" value="1" <?php checked( $instance['image_position'] ); ?>/>
+                                        <label for="<?php echo esc_attr( $this->get_field_id( 'image_position' ) ); ?>"><?php _e( 'Show Image Below Title', 'featured-custom-post-type-widget-for-genesis' ); ?></label>
+                                </p>
 
 			</div>
 
